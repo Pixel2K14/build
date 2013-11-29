@@ -1482,6 +1482,9 @@ ifneq ($(TARGET_UNIFIED_DEVICE),)
     $(INTERNAL_OTA_PACKAGE_TARGET): override_prop := --override_prop=true
 endif
 
+BOOT_ZIP_FROM_IMAGE_SCRIPT := ./build/tools/releasetools/boot_flash_from_image
+KERNEL_PATH := $(TARGET_KERNEL_SOURCE)/arch/arm/configs/$(TARGET_KERNEL_CONFIG)
+
 $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 	@echo "$(OTA_FROM_TARGET_SCRIPT)" > $(PRODUCT_OUT)/ota_script_path
 	@echo "$(override_device)" > $(PRODUCT_OUT)/ota_override_device
@@ -1497,16 +1500,25 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 
 PIXEL_TARGET_PACKAGE := $(PRODUCT_OUT)/$(PIXEL_VERSION).zip
 
-.PHONY: otapackage bacon
+.PHONY: otapackage bacon bootzip
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
 bacon: otapackage
+bootzip: bootimage
+	$(BOOT_ZIP_FROM_IMAGE_SCRIPT) \
+	   $(recovery_fstab) \
+	   $(OUT) \
+	   $(TARGET_DEVICE)
+
 ifneq ($(TARGET_CUSTOM_RELEASETOOL),)
 	$(error TARGET_CUSTOM_RELEASETOOL is deprecated)
+else
+	@echo -e ${CL_YLW}"Running squisher:"${CL_RST}
+	$(hide) ./vendor/pixel/tools/squisher
 endif
-	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(PIXEL_TARGET_PACKAGE)
-	$(hide) $(MD5SUM) $(PIXEL_TARGET_PACKAGE) > $(PIXEL_TARGET_PACKAGE).md5sum
-	@echo -e ${CL_GRN}"Package Complete: $(PIXEL_TARGET_PACKAGE)"${CL_RST}
-
+#	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(PIXEL_TARGET_PACKAGE)
+#	$(hide) $(MD5SUM) $(PIXEL_TARGET_PACKAGE) > $(PIXEL_TARGET_PACKAGE).md5sum
+#	@echo -e ${CL_GRN}"Package Complete: $(PIXEL_TARGET_PACKAGE)"${CL_RST}
+#
 # -----------------------------------------------------------------
 # The update package
 
