@@ -1452,10 +1452,10 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
 bacon: otapackage
 ifneq ($(TARGET_CUSTOM_RELEASETOOL),)
-        $(error TARGET_CUSTOM_RELEASETOOL is deprecated)
+   $(error TARGET_CUSTOM_RELEASETOOL is deprecated)
 endif
-        @echo -e ${CL_YLW}"Running vendor releasetool..."${CL_RST}
-        $(hide) OTAPACKAGE=$(INTERNAL_OTA_PACKAGE_TARGET) APKCERTS=$(APKCERTS_FILE) ./vendor/pixel/tools/squisher
+   @echo -e ${CL_YLW}"Running vendor releasetool..."${CL_RST}
+   $(hide) OTAPACKAGE=$(INTERNAL_OTA_PACKAGE_TARGET) APKCERTS=$(APKCERTS_FILE) ./vendor/pixel/tools/squisher
 
 # -----------------------------------------------------------------
 # The update package
