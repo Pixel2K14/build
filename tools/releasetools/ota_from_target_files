@@ -529,9 +529,13 @@ else if get_stage("%(bcb_dev)s", "stage") == "3/3" then
     script.Print("******************************************");
     script.Print("*   Compiled: %s"%(builddate));
 
-  device = GetBuildProp("ro.product.device", OPTIONS.info_dict)
-  model = GetBuildProp("ro.product.model", OPTIONS.info_dict)
-  script.Print("*   Device: %s (%s)"%(model, device));
+  if OPTIONS.override_prop:
+    product = GetBuildProp("ro.build.product", OPTIONS.info_dict)
+    script.Print("*   Product: %s"%(product));
+  else:
+    device = GetBuildProp("ro.product.device", OPTIONS.info_dict)
+    model = GetBuildProp("ro.product.model", OPTIONS.info_dict)
+    script.Print("*   Device: %s (%s)"%(model, device));
   script.Print("******************************************");
 
   if "selinux_fc" in OPTIONS.info_dict:
@@ -559,7 +563,6 @@ else if get_stage("%(bcb_dev)s", "stage") == "3/3" then
   script.ShowProgress(0.2, 0)
 
   if OPTIONS.backuptool:
-    script.Print("Restoring backup")
     script.ShowProgress(0.2, 10)
     script.RunBackup("restore")
 
