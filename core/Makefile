@@ -1458,9 +1458,9 @@ ifneq ($(TARGET_CUSTOM_RELEASETOOL),)
 endif
 	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(PIXEL_TARGET_PACKAGE)
 	$(hide) $(MD5SUM) $(PIXEL_TARGET_PACKAGE) > $(PIXEL_TARGET_PACKAGE).md5sum
-	$(hide) ZIPSIZE=`ls -lah $OUTFILE | awk '{ print $5}'`
+	$(hide) ZIPSIZE=`ls -lah $(PIXEL_TARGET_PACKAGE) | awk '{ print $5}'`
 	@echo -e ${CL_GRN}"Package Complete: $(PIXEL_TARGET_PACKAGE)"${CL_RST}
-	@echo -e ${CL_GRN}"ZIP: $(PIXEL_TARGET_PACKAGE)"${CL_RST}
+	@echo -e ${CL_GRN}"ZIP: $(PIXEL_VERSION).zip"${CL_RST}
         @echo -e ${CL_GRN}"MD5: `cat $(PIXEL_TARGET_PACKAGE).md5sum | awk '{print $1}'`"${CL_RST}
         @echo -e ${CL_GRN}"SIZE: $(ZIPSIZE)"${CL_RST}
 
