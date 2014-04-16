@@ -55,7 +55,7 @@ def check_repo_exists(git_data):
 # Note that this can only be done 5 times per minute
 def search_github_for_device(device):
     git_search_url = "https://api.github.com/search/repositories" \
-                     "?q=%40{}+platform_device+{}+fork:true".format(android_team, device)
+                     "?q=%40{}+device+{}+fork:true".format(android_team, device)
     git_req = urllib.request.Request(git_search_url)
     # this api is a preview at the moment. accept the custom media type
     git_req.add_header('Accept', 'application/vnd.github.preview')
@@ -74,9 +74,9 @@ def get_device_url(git_data):
     device_url = ""
     for item in git_data['items']:
         temp_url = item.get('html_url')
-        if "{}/platform_device".format(android_team) in temp_url:
+        if "{}/device".format(android_team) in temp_url:
             try:
-                temp_url = temp_url[temp_url.index("platform_device"):]
+                temp_url = temp_url[temp_url.index("device"):]
             except ValueError:
                 pass
             else:
@@ -91,7 +91,7 @@ def get_device_url(git_data):
 
 
 def parse_device_directory(device_url,device):
-    to_strip = "platform_device"
+    to_strip = "device"
     repo_name = device_url[device_url.index(to_strip) + len(to_strip):]
     repo_name = repo_name[:repo_name.index(device)]
     repo_dir = repo_name.replace("_", "/")
@@ -183,7 +183,7 @@ def write_to_manifest(manifest):
 def parse_device_from_manifest(device):
     for project in iterate_manifests():
         name = project.get('name')
-        if name.startswith("platform_device_") and name.endswith(device):
+        if name.startswith("device_") and name.endswith(device):
             return project.get('path')
     return None
 
