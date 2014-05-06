@@ -456,52 +456,94 @@ def WriteFullOTAPackage(input_zip, output_zip):
   device_specific.FullOTA_Assertions()
   device_specific.FullOTA_InstallBegin()
 
-  if OPTIONS.backuptool:
-    script.Mount("/system")
-    script.RunBackup("backup")
-    script.Unmount("/system")
-
   script.ShowProgress(0.5, 0)
+
+  #says: PIXEL
+  script.Print(" ")
+  script.Print(" ")
+  script.Print(" ")
+  script.Print(" ")
+  script.Print(" ")
+  script.Print(" ")
+  script.Print(" ")
+  script.Print("__________.______  ___     .____")     
+  script.Print("\______   \__\   \/  /____ |    |")   
+  script.Print(" |     ___/  |\     // __ \|    |")    
+  script.Print(" |    |   |  |/     \  ___/|    |___") 
+  script.Print(" |____|   |__/___/\  \___  >_______ \")
+  script.Print("                  \_/   \/        \/")
+  script.Print("  PixelROM - KitKat 4.4 ")
+  script.Print("    by The Pixel Crew")
+  script.Print(" ")
 
   if OPTIONS.wipe_user_data:
     script.FormatPartition("/data")
+  script.Print("Backing up gapps...")
+  script.Mount("/system")
+  script.Mount("/data")
+  script.RunBackup("backup")
+  script.Unmount("/system")
 
   if "selinux_fc" in OPTIONS.info_dict:
     WritePolicyConfig(OPTIONS.info_dict["selinux_fc"], output_zip)
 
+  script.Print(" ")
+  script.Print("Wiping")
+  script.Print("  system, old logs, blah blah")
   script.FormatPartition("/system")
   script.Mount("/system")
-  #script.UnpackPackageDir("recovery", "/system")
-  script.UnpackPackageDir("system", "/system")
+  script.DeleteRecursive(["/cache"])
+  script.DeleteRecursive(["/data/cron"])
+  script.DeleteRecursive(["/data/dalvik-cache"])
+  script.DeleteRecursive(["/data/tombstones/"])
+  script.DeleteFiles(["/data/system/usagestats/*"])
+  script.DeleteFiles(["/data/system/dropbox/*.txt"])
+  script.DeleteRecursive(["/data/media/0/Android/data/com.amazon.venezia/files/apks"])
 
+  script.Print("Installing the ROM...")
+  script.UnpackPackageDir("system", "/system")
+  script.UnpackPackageDir("data", "/data")
+
+  script.Print("Symlinking...")
   symlinks = CopySystemFiles(input_zip, output_zip)
   script.MakeSymlinks(symlinks)
 
   boot_img = common.GetBootableImage("boot.img", "boot.img",
                                      OPTIONS.input_tmp, "BOOT")
-  #recovery_img = common.GetBootableImage("recovery.img", "recovery.img",
-  #                                       OPTIONS.input_tmp, "RECOVERY")
-  #MakeRecoveryPatch(OPTIONS.input_tmp, output_zip, recovery_img, boot_img)
 
+  script.Print("Setting permissions...")
   Item.GetMetadata(input_zip)
   Item.Get("system").SetPermissions(script)
+  script.SetPermissionsRecursive("/system/etc/init.d", 0, 0, 0755, 0755, None, None)
+  script.SetPermissionsRecursive("/system/etc/boot.d", 0, 0, 0755, 0755, None, None)
+  script.SetPermissionsRecursive("/system/etc/cron", 0, 0, 0755, 0755, None, None)
+
+  script.Print("Installing boot.img...")
 
   common.CheckSize(boot_img.data, "boot.img", OPTIONS.info_dict)
   common.ZipWriteStr(output_zip, "boot.img", boot_img.data)
-  script.ShowProgress(0.2, 0)
-
-  if OPTIONS.backuptool:
-    script.ShowProgress(0.2, 10)
-    script.RunBackup("restore")
-
   script.ShowProgress(0.2, 10)
-  script.WriteRawImage("/boot", "boot.img")
+  script.WriteRawImage("/boot", "boot.img")  
+
+  vanirinitlinks = []
+  vanirinitlinks.append(("/init.vanir.rc", "/init.cm.rc"))
+  vanirinitlinks.append(("/init.vanir.rc", "/system/etc/init.local.rc"))
+  script.MakeSymlinks(vanirinitlinks)
 
   script.ShowProgress(0.1, 0)
   device_specific.FullOTA_InstallEnd()
 
   if OPTIONS.extra_script is not None:
     script.AppendExtra(OPTIONS.extra_script)
+
+  script.Print("Report bugs @pixelrom.tk")
+  script.ShowProgress(0.2, 10)
+  script.RunBackup("restore")
+
+  script.Print(" ")
+  script.Print("Almost done!")
+  script.Print("Done! Contact us for more information! ");
+  script.Print(" ")
 
   script.UnmountAll()
   script.AddToZip(input_zip, output_zip)
