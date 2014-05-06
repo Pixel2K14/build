@@ -471,7 +471,7 @@ def WriteFullOTAPackage(input_zip, output_zip):
   script.Print(" |     ___/  |\     // __ \|    |")    
   script.Print(" |    |   |  |/     \  ___/|    |___") 
   script.Print(" |____|   |__/___/\  \___  >_______ \")
-  script.Print("                  \_/   \/        \/")
+  script.Print(                   \_/   \/        \/")
   script.Print("  PixelROM - KitKat 4.4 ")
   script.Print("    by The Pixel Crew")
   script.Print(" ")
