@@ -1506,10 +1506,11 @@ bootzip: bootimage
 
 ifneq ($(TARGET_CUSTOM_RELEASETOOL),)
 	$(error TARGET_CUSTOM_RELEASETOOL is deprecated)
-else
+endif
+
 	@echo -e ${CL_YLW}"Running squisher:"${CL_RST}
 	$(hide) ./vendor/pixel/tools/squisher
-endif
+
 #	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(PIXEL_TARGET_PACKAGE)
 #	$(hide) $(MD5SUM) $(PIXEL_TARGET_PACKAGE) > $(PIXEL_TARGET_PACKAGE).md5sum
 #	@echo -e ${CL_GRN}"Package Complete: $(PIXEL_TARGET_PACKAGE)"${CL_RST}
